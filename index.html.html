@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Invitación de revelación</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf7f4;--panel:#ffffff;--text:#2b2430;--muted:#6f6575;--line:#e6dde2;--c1:#f3a7bd;--c2:#9cc7ea;--accent:#7a4e9c;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1c171f;--panel:#2a232e;--text:#f3ecf5;--muted:#b3a8ba;--line:#40364a;--accent:#c9a2e6;color-scheme:dark}}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 "DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:20px 16px 56px}
+h1{font:800 clamp(1.8rem,6vw,2.6rem)/1.1 Fraunces,Georgia,serif;margin:0 0 6px}
+h2.t{font:800 1.3rem/1.2 Fraunces,Georgia,serif;margin:22px 0 8px}
+.sub{color:var(--muted);margin:0 0 16px}
+.tabs{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}
+.tabs button{background:transparent;color:var(--text);border:1px solid var(--line)}
+.tabs button[aria-selected="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.full{grid-column:1/-1}
+@media(max-width:620px){.panel{grid-template-columns:1fr}}
+label{display:grid;gap:4px;font-weight:500;font-size:.92rem}
+input,textarea{font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+small{color:var(--muted);font-weight:400}
+button{font:700 .92rem "DM Sans",system-ui,sans-serif;border:0;border-radius:999px;padding:10px 16px;cursor:pointer;background:var(--accent);color:#fff}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--line)}
+#estado{color:var(--muted);font-size:.9rem;min-height:1.4em;margin:10px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font:800 1.9rem/1.1 Fraunces,Georgia,serif}
+.stat span{color:var(--muted);font-size:.85rem}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.filters button{padding:7px 14px;font-size:.85rem}
+.filters button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.rows{display:grid;gap:10px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.btns button{padding:7px 13px;font-size:.84rem}
+.btns .on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.badge{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700;margin-left:6px}
+.s-si{background:#d5f2e1;color:#1d6b43}.s-no{background:#fbdcdc;color:#8d2b2b}.s-pen{background:#eee6f4;color:#5b4470}
+.mini{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.mini button{width:30px;height:30px;padding:0;font-size:1rem}
+.empty{color:var(--muted);padding:20px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+.hosting{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--muted);font-size:.9rem}
+
+/* ===== Vista del invitado ===== */
+body.guest main{display:none}
+#view{position:fixed;top:0;left:0;right:0;bottom:0;z-index:20;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:linear-gradient(115deg,var(--c1) 0 50%,var(--c2) 50% 100%);color:#2b2430;padding:16px 16px 28px;padding-top:calc(env(safe-area-inset-top,0px) + 16px)}
+#view.on{display:block}
+.close{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:40;background:#fffdfb;color:#2b2430}
+.center{min-height:100%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.env{position:relative;width:min(300px,80vw);height:205px;border:0;padding:0;border-radius:10px;background:#fffdfb;box-shadow:0 12px 30px rgba(60,30,70,.25);color:#2b2430;cursor:pointer;animation:bob 2.4s ease-in-out infinite;-webkit-perspective:700px;perspective:700px}
+.env .body{position:absolute;top:0;left:0;right:0;bottom:0;border-radius:10px;background:linear-gradient(115deg,var(--c1) 0 50%,var(--c2) 50% 100%);opacity:.9}
+.env .flap{position:absolute;left:0;right:0;top:0;height:58%;background:#fffdfb;-webkit-clip-path:polygon(0 0,100% 0,50% 100%);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .8s ease,opacity .4s .5s}
+.env .seal{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:#2b2430;color:#fff;font:800 1.9rem/54px Fraunces,Georgia,serif;transition:opacity .3s}
+.env.open{animation:none}.env.open .flap{transform:rotateX(180deg);opacity:0}.env.open .seal{opacity:0}
+.hint{position:absolute;bottom:14%;left:0;right:0;text-align:center;font-weight:700;color:#2b2430}
+.card{position:relative;z-index:2;width:100%;max-width:400px;background:#fffdfb;border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 14px 36px rgba(60,30,70,.25);animation:rise .9s cubic-bezier(.2,.8,.2,1) both;margin:8px 0}
+.card>*{animation:fade .6s ease both;animation-delay:var(--d,0s)}
+.q{font:800 5rem/.9 Fraunces,Georgia,serif;margin:0;background:linear-gradient(115deg,var(--c1) 0 50%,var(--c2) 50% 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;display:inline-block;animation:pulse 2.2s ease-in-out infinite,fade .6s both}
+.card h2{font:800 1.7rem/1.15 Fraunces,Georgia,serif;margin:6px 0}
+.card p{margin:5px 0}.muted{color:#6f6575;font-size:.9rem}
+.guestname{font:600 1.3rem Fraunces,Georgia,serif;margin:8px 0}
+.chip{display:inline-block;background:linear-gradient(115deg,var(--c1) 0 50%,var(--c2) 50% 100%);padding:6px 14px;border-radius:999px;font-weight:700;font-size:.9rem;margin:6px 0}
+.when{font-weight:700}
+.count{font:800 1.1rem Fraunces,Georgia,serif}
+.rsvp{margin-top:14px;padding-top:14px;border-top:1px dashed #d9ccd3}
+.opts{display:flex;gap:8px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.opts button{background:#fff;color:#2b2430;border:2px solid #d9ccd3;transition:transform .15s,border-color .15s}
+.opts button[aria-pressed="true"]{border-color:#7a4e9c;background:#f3eafa;transform:scale(1.04)}
+.step{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0;font-weight:700}
+.step button{width:38px;height:38px;padding:0;background:#f3eafa;color:#2b2430;font-size:1.2rem}
+.send{width:100%;margin-top:8px;background:#25a05a;animation:pulse 2.6s ease-in-out infinite}
+.thanks{color:#25744a;font-weight:700;min-height:1.4em}
+.b{position:absolute;bottom:-90px;width:38px;height:48px;border-radius:50% 50% 48% 48%;opacity:.85;animation:float var(--t,12s) linear infinite;animation-delay:var(--l,0s);z-index:1;pointer-events:none}
+.b::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:46px;background:rgba(43,36,48,.35)}
+#conf{position:fixed;top:0;left:0;z-index:30;pointer-events:none}
+@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{50%{transform:scale(1.07)}}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-1deg)}}
+@keyframes float{0%{transform:translate(0,0)}25%{transform:translate(14px,-30vh)}50%{transform:translate(-10px,-65vh)}100%{transform:translate(6px,-130vh)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Invitaciones de revelación</h1>
+  <p class="sub">Panel de los papás. Todo se guarda solo en este navegador.</p>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab1" aria-selected="true">1. Crear invitación</button>
+    <button role="tab" id="tab2" aria-selected="false">2. Enviar y ver confirmaciones</button>
+  </div>
+
+  <section id="p1">
+    <div class="panel">
+      <label>Nombres de los papás<input id="papas" value="Ana y Luis"></label>
+      <label>Título<input id="titulo" value="¿Niño o niña?"></label>
+      <label>Fecha<input id="fecha" type="date"></label>
+      <label>Hora<input id="hora" type="time" value="17:00"></label>
+      <label class="full">Lugar<input id="lugar" value="Casa de los abuelos, Calle Jardín 123"></label>
+      <label class="full">Mensaje<textarea id="mensaje" style="min-height:70px">Ven a descubrir con nosotros si nuestro bebé será niño o niña. ¡Te esperamos para celebrar!</textarea></label>
+      <label class="full">Nota extra <small>(opcional)</small><input id="extra" value="Viste de rosa o azul según tu apuesta."></label>
+      <label class="full">Invitados <small>(uno por línea; después de una coma, el número de pases)</small>
+        <textarea id="invitados">María López, 2
+Carlos Pérez, 1
+Familia Ramírez, 4
+Tía Laura, 2</textarea></label>
+      <label>Pases por defecto<input id="pases" type="number" min="1" max="20" value="2"></label>
+      <label>Tu WhatsApp para recibir confirmaciones <small>con código de país, solo números</small><input id="wa" inputmode="numeric" placeholder="5215512345678"></label>
+      <label>Color izquierdo<input id="c1i" type="color" value="#f3a7bd"></label>
+      <label>Color derecho<input id="c2i" type="color" value="#9cc7ea"></label>
+      <label class="full">Dirección web donde publicarás este archivo <small>(es la base de los enlaces de tus invitados)</small>
+        <input id="base" placeholder="https://tu-sitio.netlify.app/"></label>
+    </div>
+    <h2 class="t">¿Cómo la envío?</h2>
+    <p class="hosting">Este archivo funciona abierto en tu computadora, pero tus invitados necesitan abrirlo desde internet. Súbelo gratis a un hosting estático (por ejemplo Netlify Drop o GitHub Pages), pega aquí la dirección que te den y copia el enlace de cada invitado en la pestaña 2.</p>
+  </section>
+
+  <section id="p2" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="filters" id="filters"></div>
+    <div id="estado" role="status"></div>
+    <div class="rows" id="rows"></div>
+    <h2 class="t">Registrar respuestas de WhatsApp</h2>
+    <p class="sub">Pega aquí los mensajes de confirmación que te llegaron (varios a la vez sirve). Se leen solos y actualizan la lista.</p>
+    <textarea id="pegar" placeholder="Pega aquí los mensajes recibidos…"></textarea>
+    <div class="btns" style="margin-top:10px"><button id="importar">Registrar respuestas</button><button class="sec" id="csv">Descargar lista (CSV)</button><button class="sec" id="reset">Borrar todas las respuestas</button></div>
+  </section>
+</main>
+
+<div id="view" aria-live="polite"></div>
+<canvas id="conf" hidden></canvas>
+
+<script>
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var KEY='revelacion:v2',CAMPOS=['papas','titulo','fecha','hora','lugar','mensaje','extra','invitados','pases','wa','c1i','c2i','base'];
+var resp={},filtro='todos';
+
+/* ---- guardado local ---- */
+function guardar(){try{var c={};CAMPOS.forEach(function(k){c[k]=$(k).value});localStorage.setItem(KEY,JSON.stringify({c:c,r:resp}))}catch(e){}}
+function cargar(){try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s)return;CAMPOS.forEach(function(k){if(s.c&&s.c[k]!=null)$(k).value=s.c[k]});resp=s.r||{}}catch(e){}}
+
+/* ---- codificación del enlace (solo letras y números) ---- */
+var A='abcdefghijklmnopqrstuvwxyz234567';
+function enc(by){var b=0,v=0,o='';for(var k=0;k<by.length;k++){v=(v<<8)|by[k];b+=8;while(b>=5){o+=A[(v>>>(b-5))&31];b-=5}v&=(1<<b)-1}if(b)o+=A[(v<<(5-b))&31];return o}
+function dec(s){var b=0,v=0,o=[];for(var k=0;k<s.length;k++){var i=A.indexOf(s[k]);if(i<0)continue;v=(v<<5)|i;b+=5;if(b>=8){o.push((v>>>(b-8))&255);b-=8}v&=(1<<b)-1}return new Uint8Array(o)}
+async function pack(obj){
+  var raw=new TextEncoder().encode(JSON.stringify(obj));
+  if(window.CompressionStream){try{var s=new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'));return 'c'+enc(new Uint8Array(await new Response(s).arrayBuffer()))}catch(e){}}
+  return 'p'+enc(raw);
+}
+async function unpack(code){
+  var by=dec(code.slice(1));
+  if(code[0]==='c')by=new Uint8Array(await new Response(new Blob([by]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  return JSON.parse(new TextDecoder().decode(by));
+}
+
+/* ---- utilidades ---- */
+function fechaLarga(v){if(!v)return 'Fecha por confirmar';var p=v.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+function diasQue(v){if(!v)return null;var p=v.split('-').map(Number),t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(p[0],p[1]-1,p[2])-t)/864e5)}
+function pl(n,s,p){return n+' '+(n===1?s:p)}
+function setColors(a,b){var r=document.documentElement.style;r.setProperty('--c1','#'+a);r.setProperty('--c2','#'+b)}
+function hid(n){var h=5381;n=n.toLowerCase();for(var k=0;k<n.length;k++)h=((h<<5)+h+n.charCodeAt(k))|0;return (h>>>0).toString(36)}
+
+/* ---- confeti ---- */
+function confetti(){
+  if(reduce)return;var cv=$('conf');cv.hidden=false;cv.width=innerWidth;cv.height=innerHeight;var x=cv.getContext('2d');
+  var st=getComputedStyle(document.documentElement),cs=[st.getPropertyValue('--c1').trim(),st.getPropertyValue('--c2').trim(),'#ffffff','#ffd86b'],ps=[];
+  for(var k=0;k<110;k++)ps.push({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*13-3,s:5+Math.random()*6,c:cs[Math.floor(Math.random()*4)],r:Math.random()*6});
+  var f=0;(function t(){x.clearRect(0,0,cv.width,cv.height);ps.forEach(function(p){p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.r+=.2;x.fillStyle=p.c;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillRect(-p.s/2,-p.s/3,p.s,p.s/1.6);x.restore()});if(++f<150)requestAnimationFrame(t);else cv.hidden=true})();
+}
+
+/* ---- vista del invitado ---- */
+function showGuest(d,preview){
+  setColors(d.a,d.b);
+  var v=$('view');v.className='on';
+  v.innerHTML=(preview?'<button class="close sec" id="cerrar">Cerrar vista previa</button>':'')+
+   '<div class="center"><button class="env" id="sobre" aria-label="Abrir invitación"><span class="body"></span><span class="flap"></span><span class="seal">?</span></button><span class="hint">Toca el sobre para abrir</span></div>';
+  if(preview)$('cerrar').onclick=function(){v.className='';v.innerHTML=''};
+  $('sobre').onclick=function(){this.classList.add('open');setTimeout(function(){card(d,v,preview)},reduce?0:850)};
+}
+function card(d,v,preview){
+  var dias=diasQue(d.f),cuenta=dias===null?'':dias>0?'Faltan '+pl(dias,'día','días'):dias===0?'¡Es hoy!':'';
+  var est='si',cant=1,bal='';
+  if(!reduce)for(var i=0;i<7;i++)bal+='<span class="b" style="left:'+(6+i*14)+'%;background:'+(i%2?'var(--c2)':'var(--c1)')+';--t:'+(10+(i*7)%8)+'s;--l:-'+(i*2.3)+'s"></span>';
+  v.innerHTML=(preview?'<button class="close sec" id="cerrar">Cerrar vista previa</button>':'')+'<div class="center">'+bal+
+  '<article class="card"><p class="q">?</p>'+
+  '<h2 style="--d:.25s">'+esc(d.t)+'</h2>'+
+  '<p style="--d:.4s">'+esc(d.p)+' te invitan a su revelación</p>'+
+  '<p class="guestname" style="--d:.55s">'+esc(d.g)+'</p>'+
+  '<span class="chip" style="--d:.65s">Pase para '+pl(d.n,'persona','personas')+'</span>'+
+  '<p style="--d:.8s">'+esc(d.m)+'</p>'+
+  '<p class="when" style="--d:.95s">'+esc(fechaLarga(d.f))+(d.h?' · '+esc(d.h)+' h':'')+'</p>'+
+  '<p class="when" style="--d:1.05s">'+esc(d.l)+'</p>'+
+  (d.x?'<p class="muted" style="--d:1.15s">'+esc(d.x)+'</p>':'')+
+  (cuenta?'<p class="count" style="--d:1.25s">'+cuenta+'</p>':'')+
+  '<div class="rsvp" style="--d:1.4s"><strong>¿Nos acompañas?</strong>'+
+  '<div class="opts"><button id="si" aria-pressed="true">Sí, ahí estaré</button><button id="no" aria-pressed="false">No podré ir</button></div>'+
+  '<div class="step" id="step"'+(d.n>1?'':' hidden')+'><span>Personas:</span><button id="menos" aria-label="Menos">−</button><span id="cant">1</span><button id="mas" aria-label="Más">+</button></div>'+
+  '<button class="send" id="enviar">Enviar confirmación</button><p class="thanks" id="gracias"></p></div></article></div>';
+  if(preview)$('cerrar').onclick=function(){v.className='';v.innerHTML=''};
+  confetti();
+  function upd(){$('si').setAttribute('aria-pressed',est==='si');$('no').setAttribute('aria-pressed',est==='no');$('step').hidden=!(est==='si'&&d.n>1);$('cant').textContent=cant}
+  $('si').onclick=function(){est='si';upd()};$('no').onclick=function(){est='no';upd()};
+  $('menos').onclick=function(){cant=Math.max(1,cant-1);upd()};$('mas').onclick=function(){cant=Math.min(d.n,cant+1);upd()};
+  $('enviar').onclick=function(){
+    var ref=' Ref: '+d.i+'-'+(est==='si'?'s'+cant:'n');
+    var msg=est==='si'?'Hola, soy '+d.g+'. ¡Confirmo mi asistencia a la revelación! Asistiremos '+pl(cant,'persona','personas')+'.'+ref:'Hola, soy '+d.g+'. Lamentablemente no podré asistir a la revelación. ¡Un abrazo!'+ref;
+    if(est==='si')confetti();
+    if(preview){$('gracias').textContent='Vista previa: aquí se abriría WhatsApp con tu respuesta.';return}
+    $('gracias').textContent=est==='si'?'¡Gracias por confirmar!':'Gracias por avisarnos.';
+    if(d.w){window.open('https://wa.me/'+d.w+'?text='+encodeURIComponent(msg),'_blank')}
+    else if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){$('gracias').textContent+=' Respuesta copiada: pégala en un mensaje a los papás.'},function(){$('gracias').textContent+=' Escríbeles para avisar.'})}
+  };
+}
+
+/* ---- editor ---- */
+function lista(){
+  var def=Math.max(1,parseInt($('pases').value)||1);
+  return $('invitados').value.split('\n').map(function(s){return s.trim()}).filter(Boolean).map(function(s){
+    var m=s.match(/^(.*?)[,;]\s*(\d{1,2})$/),g=m?m[1].trim():s;return{g:g,n:m?Math.max(1,+m[2]):def,i:hid(g)}});
+}
+function datos(g){return{g:g.g,n:g.n,i:g.i,p:$('papas').value,t:$('titulo').value,f:$('fecha').value,h:$('hora').value,l:$('lugar').value,m:$('mensaje').value,x:$('extra').value,a:$('c1i').value.slice(1),b:$('c2i').value.slice(1),w:$('wa').value.replace(/\D/g,'')}}
+async function enlace(g){var b=$('base').value.trim().replace(/#.*$/,'');if(!b)return null;return b+'#'+await pack(datos(g))}
+function aviso(t){$('estado').textContent=t;setTimeout(function(){$('estado').textContent=''},4000)}
+function copiar(t,m){
+  function ok(){aviso(m)}
+  if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t).then(ok,function(){aviso('No se pudo copiar automáticamente.')});
+  var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){aviso('No se pudo copiar automáticamente.')}document.body.removeChild(a);
+}
+
+function render(){
+  setColors($('c1i').value.slice(1),$('c2i').value.slice(1));
+  var L=lista(),si=0,no=0,pers=0,pases=0;
+  L.forEach(function(g){var r=resp[g.i];pases+=g.n;if(r&&r.e==='si'){si++;pers+=r.c}else if(r&&r.e==='no')no++});
+  var pen=L.length-si-no;
+  $('stats').innerHTML=[[L.length,'Invitaciones'],[si,'Confirmaron'],[no,'No asisten'],[pen,'Sin responder'],[pers,'Personas que irán'],[Math.max(0,pers-si),'Acompañantes'],[pases,'Pases entregados']].map(function(s){return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>'}).join('');
+  $('filters').innerHTML=[['todos','Todos'],['si','Confirmaron'],['no','No asisten'],['pen','Sin responder']].map(function(f){return '<button class="sec" data-f="'+f[0]+'" aria-pressed="'+(filtro===f[0])+'">'+f[1]+'</button>'}).join('');
+  var out='';
+  L.forEach(function(g,i){
+    var r=resp[g.i],e=r?r.e:'pen';if(filtro!=='todos'&&filtro!==e)return;
+    var badge=e==='si'?'<span class="badge s-si">Confirmó</span>':e==='no'?'<span class="badge s-no">No asiste</span>':'<span class="badge s-pen">Sin responder</span>';
+    var det=pl(g.n,'pase','pases')+(e==='si'?' · va con '+pl(r.c-1,'acompañante','acompañantes')+' ('+pl(r.c,'persona','personas')+')':'');
+    var st=e==='si'&&g.n>1?'<span class="mini"><button class="sec" data-a="menos" data-i="'+i+'" aria-label="Menos personas">−</button>'+r.c+'<button class="sec" data-a="mas" data-i="'+i+'" aria-label="Más personas">+</button></span>':'';
+    out+='<div class="row"><div><b>'+esc(g.g)+'</b>'+badge+'<br><small>'+det+'</small></div><div class="btns">'+st+
+    '<button class="sec'+(e==='si'?' on':'')+'" data-a="si" data-i="'+i+'">Confirmó</button><button class="sec'+(e==='no'?' on':'')+'" data-a="no" data-i="'+i+'">No va</button><button class="sec'+(e==='pen'?' on':'')+'" data-a="pen" data-i="'+i+'">Pendiente</button>'+
+    '<button class="sec" data-a="ver" data-i="'+i+'">Vista previa</button><button data-a="link" data-i="'+i+'">Copiar enlace</button><button data-a="msg" data-i="'+i+'">Copiar mensaje</button></div></div>';
+  });
+  $('rows').innerHTML=out||'<div class="empty">'+(L.length?'No hay invitados en esta categoría.':'Escribe al menos un invitado en la pestaña 1.')+'</div>';
+}
+function cambio(){guardar();render()}
+CAMPOS.forEach(function(id){$(id).addEventListener('input',cambio)});
+$('filters').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;filtro=b.dataset.f;render()});
+$('rows').addEventListener('click',async function(e){
+  var b=e.target.closest('button');if(!b)return;var g=lista()[+b.dataset.i],a=b.dataset.a;
+  if(a==='ver')return showGuest(datos(g),true);
+  if(a==='si'){resp[g.i]={e:'si',c:(resp[g.i]&&resp[g.i].c)||1};return cambio()}
+  if(a==='no'){resp[g.i]={e:'no',c:0};return cambio()}
+  if(a==='pen'){delete resp[g.i];return cambio()}
+  if(a==='mas'){resp[g.i].c=Math.min(g.n,resp[g.i].c+1);return cambio()}
+  if(a==='menos'){resp[g.i].c=Math.max(1,resp[g.i].c-1);return cambio()}
+  var u=await enlace(g);
+  if(!u){aviso('Primero escribe la dirección web donde publicarás el archivo (pestaña 1, último campo).');return}
+  if(a==='link')copiar(u,'Enlace copiado para '+g.g+'.');
+  else copiar('Hola '+g.g+' 🎉 '+$('papas').value+' te invitan a su revelación. Abre tu invitación aquí y confirma tu asistencia: '+u,'Mensaje copiado para '+g.g+'.');
+});
+$('importar').onclick=function(){
+  var t=$('pegar').value,re=/Ref:\s*([a-z0-9]+)-([sn])(\d*)/gi,m,n=0,ids={};
+  lista().forEach(function(g){ids[g.i]=g});
+  while((m=re.exec(t))){var g=ids[m[1].toLowerCase()];if(!g)continue;
+    if(m[2].toLowerCase()==='s')resp[g.i]={e:'si',c:Math.min(g.n,Math.max(1,+m[3]||1))};else resp[g.i]={e:'no',c:0};n++}
+  $('pegar').value='';cambio();aviso(n?pl(n,'respuesta registrada','respuestas registradas')+'.':'No encontré respuestas en el texto. Revisa que incluya la línea «Ref: …».');
+};
+$('csv').onclick=function(){
+  var rows=[['Invitado','Estado','Personas','Acompañantes','Pases']].concat(lista().map(function(g){var r=resp[g.i];return[g.g,r?(r.e==='si'?'Confirmó':'No asiste'):'Sin responder',r&&r.e==='si'?r.c:0,r&&r.e==='si'?r.c-1:0,g.n]}));
+  var csv='\ufeff'+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(',')}).join('\r\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='confirmaciones.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+$('reset').onclick=function(){if(confirm('¿Borrar todas las respuestas registradas?')){resp={};cambio()}};
+function tab(n){$('p1').hidden=n!==1;$('p2').hidden=n!==2;$('tab1').setAttribute('aria-selected',n===1);$('tab2').setAttribute('aria-selected',n===2);if(n===2)render()}
+$('tab1').onclick=function(){tab(1)};$('tab2').onclick=function(){tab(2)};
+
+/* ---- arranque ---- */
+(async function(){
+  var h=location.hash;
+  if(/^#[cp][a-z2-7]{20,}$/.test(h)){
+    document.body.classList.add('guest');
+    try{showGuest(await unpack(h.slice(1)),false)}
+    catch(e){$('view').className='on';$('view').innerHTML='<div class="center"><p class="card">No pudimos abrir esta invitación. Prueba con un navegador actualizado o pide a los papás que te envíen el enlace de nuevo.</p></div>'}
+  }else{
+    var d=new Date();d.setDate(d.getDate()+21);$('fecha').value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+    if(/^https?:/.test(location.protocol))$('base').value=location.href.split('#')[0];
+    cargar();render();
+  }
+})();
+</script>
+</body>
+</html>
